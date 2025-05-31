@@ -43,10 +43,10 @@ jobs:
           New-Item -ItemType Directory -Force -Path "Celeste\lib\Steamworks\x64"
 
           Copy-Item "$extractPath\Windows-x86\Steamworks.NET.dll" "Celeste\lib\Steamworks\x86\"
-          Copy-Item "$extractPath\Windows-x86\steam_api64.dll" "Celeste\lib\Steamworks\x86\"
+          Copy-Item "$extractPath\Windows-x86\steam_api.dll" "Celeste\lib\Steamworks\x86\"
 
           Copy-Item "$extractPath\Windows-x64\Steamworks.NET.dll" "Celeste\lib\Steamworks\x64\"
-          Copy-Item "$extractPath\Windows-x64\steam_api.dll" "Celeste\lib\Steamworks\x64\"
+          Copy-Item "$extractPath\Windows-x64\steam_api64.dll" "Celeste\lib\Steamworks\x64\"
 
       - name: Set up MSVC environment
         shell: cmd
