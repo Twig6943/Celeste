@@ -29,6 +29,25 @@ jobs:
             "--includeRecommended", `
             "--passive", "--norestart", "--wait"
 
+      - name: Download and Extract Steamworks.NET
+        shell: pwsh
+        run: |
+          $url = "https://github.com/rlabrecque/Steamworks.NET/releases/download/2024.8.0/Steamworks.NET-Standalone_2024.8.0.zip"
+          $zipPath = "$env:RUNNER_TEMP\steamworks.zip"
+          $extractPath = "$env:RUNNER_TEMP\steamworks"
+
+          Invoke-WebRequest $url -OutFile $zipPath
+          Expand-Archive -Path $zipPath -DestinationPath $extractPath
+
+          New-Item -ItemType Directory -Force -Path "Celeste\lib\Steamworks\x86"
+          New-Item -ItemType Directory -Force -Path "Celeste\lib\Steamworks\x64"
+
+          Copy-Item "$extractPath\Windows-x86\Steamworks.NET.dll" "Celeste\lib\Steamworks\x86\"
+          Copy-Item "$extractPath\Windows-x86\steam_api64.dll" "Celeste\lib\Steamworks\x86\"
+
+          Copy-Item "$extractPath\Windows-x64\Steamworks.NET.dll" "Celeste\lib\Steamworks\x64\"
+          Copy-Item "$extractPath\Windows-x64\steam_api.dll" "Celeste\lib\Steamworks\x64\"
+
       - name: Set up MSVC environment
         shell: cmd
         run: |
