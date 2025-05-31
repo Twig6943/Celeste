@@ -1,0 +1,46 @@
+name: Build
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Install Visual Studio 2019 Build Tools with .NET 4.5 Targeting Pack
+        shell: pwsh
+        run: |
+          $vsInstallerUrl = "https://aka.ms/vs/16/release/vs_buildtools.exe"
+          $vsInstallerPath = "$env:RUNNER_TEMP\vs_buildtools.exe"
+          $installDir = "C:\MyVS2019"
+
+          Invoke-WebRequest $vsInstallerUrl -OutFile $vsInstallerPath
+
+          Start-Process -Wait -FilePath $vsInstallerPath -ArgumentList `
+            "--installPath `"$installDir`"", `
+            "--add Microsoft.VisualStudio.Workload.VCTools", `
+            "--add Microsoft.Net.Component.4.7.1.TargetingPack", `
+            "--add Microsoft.Net.Component.4.5.TargetingPack", `
+            "--add Microsoft.Net.Component.4.0.TargetingPack", `
+            "--includeRecommended", `
+            "--passive", "--norestart", "--wait"
+
+      - name: Set up MSVC environment
+        shell: cmd
+        run: |
+          call "C:\MyVS2019\VC\Auxiliary\Build\vcvars64.bat"
+
+      - name: Build Celeste.csproj
+        shell: cmd
+        run: |
+          "C:\MyVS2019\MSBuild\Current\Bin\MSBuild.exe" Celeste\Celeste.csproj /p:Configuration=Release
+
+      - name: Upload binaries
+        uses: actions/upload-artifact@v4
+        with:
+          name: Binaries
+          path: Celeste\bin\Release\
